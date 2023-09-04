@@ -1,0 +1,60 @@
+// !**************************************************************************************************                                    // !* by Hadi Zolfaghari, ARTORG Center, University of Bern, (zolfaghari.haadi@gmail.com)            *      
+// !* October 2015 - March 2020                                                                      *            
+// !* Modified by Hadi Zolfaghari, University of Cambridge (hz382@damtp.cam.ac.uk)                   *      
+// !* April 2020 -                                                                                   *            
+// !**************************************************************************************************
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include "divergence2_kernel.cu"
+extern "C" void divergence2_launcher_(int *nx_dev, int *ny_dev, int *nz_dev, int *nx_div_coef1, int *nx_div_coef2, int* nx_div_coef3, double** phi_div2_dev, double** div2_dev, double** cDu1_dev, double** cDv2_dev, double** cDw3_dev)
+{
+
+//TODO: change the cDu1 variable name in this routine, it takes cDv2 and cDw3 too, see divergence_host.f90
+/*dim3    blocks((nx_dev-8)/8, (ny_dev-8)/8, (nz_dev-8)/8);
+*/
+
+int nx = (*nx_dev-8)/8;
+int ny = (*ny_dev-8)/8;
+int nz = (*nz_dev-8)/8;
+
+
+dim3 blocks(nx,ny,nz);
+
+int nxt = (*nx_dev-8)/blocks.x;
+int nyt = (*ny_dev-8)/blocks.y;
+int nzt = (*nz_dev-8)/blocks.z;
+
+/*printf("Value of n=%d", nxt);
+printf("Value of n=%d", nx);*/
+
+ 
+dim3 threads(nxt,nyt,nzt);
+
+/*int nxg = *nx_dev;
+int nyg = *ny_dev;
+int nzg = *nz_dev; 
+
+cudaMemcpy(*phi_grad_dev, pre, sizeof(double) * nxg * nyg * nzg, cudaMemcpyHostToDevice ); */
+
+/*int nxgc1 = *nx_grad_coef1;
+int nygc1 = *ny_grad_coef1;
+
+
+cudaMemcpy(*cGp1_dev, cGp1, sizeof(double) * nxgc1 * nygc1, cudaMemcpyHostToDevice ); */
+
+
+//int row = sizeof(*phi_grad_dev) / sizeof(*phi_grad_dev[0]);
+//int column = sizeof(*phi_grad_dev[0])/row;
+//printf ("pressure host pointer:, %f\n", pre[0]);
+//printf ("pressure host:, %f\n", phi_grad_dev[0]);
+
+/*    if (mod(nx_dev, szblock) .ne. 0) blocks%x = blocks%x + 1 */
+/*dim3    threads((nx_dev-8)/blocks.x, (ny_dev-8)/blocks.y, (nz_dev-8)/blocks.z);
+*/
+
+divergence2_kernel<<< blocks,threads >>>(*nx_dev, *ny_dev, *nz_dev, *nx_div_coef1, *nx_div_coef2, *nx_div_coef3,*phi_div2_dev, *div2_dev, *cDu1_dev, *cDv2_dev, *cDw3_dev);
+return;
+}

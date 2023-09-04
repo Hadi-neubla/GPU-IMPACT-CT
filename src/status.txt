@@ -1,0 +1,3 @@
+at Feb 2 18: all GPU kernels are returned to service
+at feb 2 18: benchmark for flow around a solid sphere is setting up -- 1*1*3 channel, sphere of r=0.2 is located at (0.5, 0.5,1.) 
+at Feb 2 18: ready to run in prog , on -N 3
